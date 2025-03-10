@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA 測試應用</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="icons/icon-192x192.png">
+</head>
+<body>
+    <h1>歡迎來到 PWA 應用</h1>
+    <p>這是一個簡單的 Progressive Web App 測試範例。</p>
+    <button onclick="installPWA()">安裝 PWA</button>
+
+    <script>
+        // 註冊 Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/pwa_app/sw.js')
+                .then(() => console.log("Service Worker 註冊成功"))
+                .catch(error => console.log("Service Worker 註冊失敗", error));
+        }
+
+        // PWA 安裝邏輯
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+        });
+
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('使用者接受安裝');
+                    } else {
+                        console.log('使用者拒絕安裝');
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }
+    </script>
+</body>
+</html>
